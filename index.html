@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rivermoore Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body { margin: 0; padding: 0; overflow: hidden; }
+    #map-container {
+      position: relative;
+      width: 100vw; height: 100vh;
+      background-image: url('https://i.imgur.com/r9vKjhh.jpg');
+      background-size: cover; background-position: center;
+    }
+    #character {
+      position: absolute;
+      width: 40px; height: 40px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/1/14/Location_dot_red.svg') no-repeat center;
+      background-size: contain;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <div id="map-container">
+    <div id="character"></div>
+  </div>
+  <script>
+    const char = document.getElementById('character');
+    const map = document.getElementById('map-container');
+    const parkCenter = { lat: 34.0425, lon: -84.0965 };
+    const SCALE = 100000;
+
+    function updatePosition(pos) {
+      const lat = pos.coords.latitude, lon = pos.coords.longitude;
+      const dx = (lon - parkCenter.lon) * SCALE;
+      const dy = (parkCenter.lat - lat) * SCALE;
+      const cx = map.clientWidth / 2, cy = map.clientHeight / 2;
+      char.style.left = `${cx + dx}px`;
+      char.style.top = `${cy + dy}px`;
+    }
+    function showError(err) { alert("GPS error: " + err.message); }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(updatePosition, showError, {
+        enableHighAccuracy: true, maximumAge: 0, timeout: 10000
+      });
+    } else alert("Geolocation not supported.");
+  </script>
+</body>
+</html>
